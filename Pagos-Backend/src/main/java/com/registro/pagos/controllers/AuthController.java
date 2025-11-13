@@ -30,10 +30,10 @@ public class AuthController {
         if (stored == null || !stored.equals(request.getPassword())) {
             throw new InvalidOperationException("Credenciales inválidas");
         }
-        // Retornamos información mínima; no usamos tokens en la opción C
         return ResponseEntity.ok(Map.of(
                 "dni", u.getDni(),
-                "nombreCompleto", u.getNombreCompleto()
+                "nombreCompleto", u.getNombreCompleto(),
+                "rol",u.getRol()
         ));
     }
 }

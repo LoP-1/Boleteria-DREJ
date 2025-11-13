@@ -1,0 +1,83 @@
+<h2>Crear boleta</h2>
+
+<div *ngIf="nombreEncargado">Encargado: {{ nombreEncargado }} (DNI: {{ dniEncargado }})</div>
+
+<form (ngSubmit)="submit()">
+  <div>
+    <label for="nombre">Nombre cliente</label><br />
+    <input id="nombre" name="nombre" required [(ngModel)]="nombre" />
+  </div>
+
+  <div>
+    <label for="documento">Documento identidad</label><br />
+    <input id="documento" name="documento" required [(ngModel)]="documentoIdentidad" />
+  </div>
+
+  <div>
+    <label for="direccion">Dirección</label><br />
+    <input id="direccion" name="direccion" [(ngModel)]="direccion" />
+  </div>
+
+  <div>
+    <label for="fecha">Fecha de emisión</label><br />
+    <input id="fecha" name="fecha" type="date" required [(ngModel)]="fechaEmision" />
+  </div>
+
+  <hr />
+
+  <h3>Agregar detalle</h3>
+  <div>
+    <label for="concepto">Concepto</label><br />
+    <select id="concepto" name="concepto" [(ngModel)]="detalleModel.conceptoId">
+      <option [ngValue]="null">-- seleccionar --</option>
+      <option *ngFor="let c of conceptos" [ngValue]="c.id">{{ c.nombre }} - {{ c.precio }}</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="cantidad">Cantidad</label><br />
+    <input id="cantidad" name="cantidad" type="number" min="1" [(ngModel)]="detalleModel.cantidad" />
+  </div>
+
+  <div style="margin-top:8px;">
+    <button type="button" (click)="agregarDetalle()">Agregar detalle</button>
+  </div>
+
+  <div *ngIf="detallesForm.length > 0" style="margin-top:12px;">
+    <h4>Detalles</h4>
+    <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>Concepto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Subtotal</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of detallesForm">
+          <td>{{ d.nombre }}</td>
+          <td>{{ d.cantidad }}</td>
+          <td>{{ d.precioUnitario }}</td>
+          <td>{{ d.subtotal }}</td>
+          <td><button type="button" (click)="quitarDetalle(d.conceptoId)">Quitar</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:8px;">
+      <strong>Total: </strong> {{ total }}
+    </div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button type="submit" [disabled]="loading">Crear boleta</button>
+  </div>
+
+  <div *ngIf="message" style="color:green; margin-top:8px;">{{ message }}</div>
+  <div *ngIf="error" style="color:darkred; margin-top:8px;">{{ error }}</div>
+</form>
+
+<app-lista-boletas></app-lista-boletas>
+<app-historial-usuario></app-historial-usuario>

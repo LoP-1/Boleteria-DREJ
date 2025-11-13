@@ -21,6 +21,7 @@ public class UsuarioController {
         public String dni;
         public String nombreCompleto;
         public String password;
+        public String rol;
     }
 
     @PostMapping
@@ -30,6 +31,7 @@ public class UsuarioController {
         }
         Usuario u = new Usuario();
         u.setDni(req.dni);
+        u.setRol(req.rol);
         u.setNombreCompleto(req.nombreCompleto);
         Usuario created = usuarioService.registerUsuario(u, req.password);
         return ResponseEntity.status(201).body(created);
@@ -39,12 +41,14 @@ public class UsuarioController {
     public static class EditUsuarioRequest {
         public String nombreCompleto;
         public String password;
+        public String rol;
     }
 
     @PutMapping("/{dni}")
     public ResponseEntity<?> edit(@PathVariable String dni, @RequestBody EditUsuarioRequest req) {
         Usuario cambios = new Usuario();
         cambios.setNombreCompleto(req != null ? req.nombreCompleto : null);
+        cambios.setRol(req != null ? req.rol : "USUARIO");
         String newPass = req != null ? req.password : null;
         Usuario updated = usuarioService.editUsuario(dni, cambios, newPass);
         return ResponseEntity.ok(updated);

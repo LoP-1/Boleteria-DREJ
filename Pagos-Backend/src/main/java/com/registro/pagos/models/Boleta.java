@@ -1,5 +1,6 @@
 package com.registro.pagos.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class Boleta {
     private EstadoBoleta estado = EstadoBoleta.PENDIENTE;
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<DetalleBoleta> detalles = new ArrayList<>();
 
     public Boleta() {}

@@ -1,4 +1,5 @@
 package com.registro.pagos.models;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -13,6 +14,7 @@ public class DetalleBoleta {
     // referencia a la boleta
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "boleta_id", nullable = false)
+    @JsonBackReference
     private Boleta boleta;
 
     // referencia al concepto

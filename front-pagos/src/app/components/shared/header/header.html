@@ -1,0 +1,14 @@
+<nav>
+  <div>
+    <button *ngIf="role === 'ADMIN'" (click)="goUsuarios()">Usuarios</button>
+    <button *ngIf="role === 'ADMIN'" (click)="goConceptos()">Conceptos</button>
+
+    <button (click)="goBoletas()">Boletas</button>
+  </div>
+
+  <div style="float:right;">
+    <span *ngIf="nombre">Bienvenido, {{ nombre }}</span>
+    <button (click)="logout()">Salir</button>
+  </div>
+</nav>
+<hr />

@@ -1,0 +1,60 @@
+<h2>Conceptos</h2>
+
+<!-- Formulario crear/editar -->
+<form (ngSubmit)="save()">
+  <div>
+    <label for="nombre">Denominación</label><br />
+    <input id="nombre" name="nombre" required [(ngModel)]="nueva.nombre" />
+  </div>
+
+  <div>
+    <label for="unidadCompetente">Unidad Competente para Resolver</label><br />
+    <input id="unidadCompetente" name="unidadCompetente" required [(ngModel)]="nueva.unidadCompetente" />
+  </div>
+  
+  <div>
+    <label for="pagina">Pagina</label><br />
+    <input id="pagina" name="pagina" required [(ngModel)]="nueva.pagina" />
+  </div>
+
+  <div>
+    <label for="precio">Monto</label><br />
+    <input id="precio" name="precio" type="number" step="0.01" required [(ngModel)]="nueva.precio" />
+  </div>
+
+  <div style="margin-top:8px;">
+    <button type="submit">{{ editingId ? 'Actualizar' : 'Crear' }}</button>
+    <button type="button" (click)="startCreate()">Limpiar</button>
+  </div>
+</form>
+
+<div *ngIf="error" style="color:darkred; margin-top:8px;">{{ error }}</div>
+
+<hr />
+
+<!-- Lista -->
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Denominación</th>
+      <th>Unidad Competente para Resolver</th>
+      <th>Pagina</th>
+      <th>Monto</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of conceptos">
+      <td>{{c.id }}</td>
+      <td>{{c.nombre }}</td>
+      <td>{{c.unidadCompetente}}</td>
+      <td>{{c.pagina}}</td>
+      <td>{{c.precio}}</td>
+      <td>
+        <button (click)="edit(c)">Editar</button>
+        <button (click)="remove(c.id)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

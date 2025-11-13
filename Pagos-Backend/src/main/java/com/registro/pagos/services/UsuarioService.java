@@ -38,10 +38,10 @@ public class UsuarioService {
     public Usuario editUsuario(String dni, Usuario cambios, String newPlainPassword) {
         Usuario u = usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + dni));
-        if (cambios.getNombreCompleto() != null) u.setNombreCompleto(cambios.getNombreCompleto());
-        // no permitir cambiar dni por este método
+        if (cambios.getNombreCompleto() != null)
+            u.setNombreCompleto(cambios.getNombreCompleto()); u.setRol(cambios.getRol()); ;
         if (newPlainPassword != null) {
-            u.setPasswordHash(newPlainPassword); // preferir hash
+            u.setPasswordHash(newPlainPassword);
         }
         return usuarioRepository.save(u);
     }

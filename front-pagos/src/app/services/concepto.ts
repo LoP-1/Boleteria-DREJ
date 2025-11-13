@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Concepto } from '../models/Concepto';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConceptoService {
-  private apiUrl = 'http://localhost:8080/conceptos';
+  private apiUrl = environment.apiUrl + '/conceptos';
 
   constructor(private http: HttpClient) {}
 

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Boleta, BoletaRequest } from '../models/Boleta';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoletaService {
-  private apiUrl = 'http://localhost:8080/boletas';
+  private apiUrl = environment.apiUrl + '/boletas';
 
   constructor(private http: HttpClient) {}
 

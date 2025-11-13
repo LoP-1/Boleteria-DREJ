@@ -1,0 +1,60 @@
+<h2>Historial de boletas (pagadas) del encargado</h2>
+
+<div *ngIf="nombreEncargado">Encargado: {{ nombreEncargado }} (DNI: {{ dniEncargado }})</div>
+
+<div *ngIf="loading">Cargando historial... ( ^_^) </div>
+<div *ngIf="error" style="color:darkred; margin-top:8px;">{{ error }}</div>
+
+<table *ngIf="!loading && boletas.length > 0" border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; margin-top:12px;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Documento</th>
+      <th>Fecha emisión</th>
+      <th>Dirección</th>
+      <th>Total</th>
+      <th>Detalles</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let b of boletas">
+      <td>{{ b.id }}</td>
+      <td>{{ b.nombre }}</td>
+      <td>{{ b.documentoIdentidad }}</td>
+      <td>
+        {{ b.fechaEmision ? (b.fechaEmision | date:'dd/MM/yyyy') : '-' }}
+      </td>
+      <td>{{ b.direccion || '-' }}</td>
+      <td>{{ totalBoleta(b) | number:'1.2-2' }}</td>
+      <td>
+        <details>
+          <summary>Ver ítems ({{ b.detalles.length || 0 }})</summary>
+          <table *ngIf="b.detalles && b.detalles.length > 0" border="0" cellpadding="4" cellspacing="0" style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Cantidad</th>
+                <th>Precio unit.</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of b.detalles">
+                <td>{{ conceptoNombre(d) }}</td>
+                <td>{{ d.cantidad }}</td>
+                <td>{{ precioUnitario(d) | number:'1.2-2' }}</td>
+                <td>{{ subtotalDetalle(d) | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="!b.detalles || b.detalles.length === 0">No hay detalles.</div>
+        </details>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!loading && boletas.length === 0 && !error" style="margin-top:12px;">
+  No se encontraron boletas pagadas por este encargado.
+</div>

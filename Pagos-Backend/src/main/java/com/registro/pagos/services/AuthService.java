@@ -52,7 +52,7 @@ public class AuthService {
         String token = UUID.randomUUID().toString();
         Instant expiresAt = Instant.now().plusSeconds(expirySeconds);
         tokenStore.put(token, new TokenInfo(req.getDni(), expiresAt));
-        return new LoginResponse(token, req.getDni(), expiresAt.getEpochSecond());
+        return new LoginResponse(token, req.getDni(), usuario.getRol(),expiresAt.getEpochSecond());
     }
 
     public Optional<String> validateToken(String token) {

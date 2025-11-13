@@ -1,4 +1,4 @@
-import { Conceptos } from "../conceptos/conceptos";
+import { Conceptos } from "../components/conceptos/conceptos";
 
 export enum EstadoBoleta {
   PENDIENTE = 'PENDIENTE',

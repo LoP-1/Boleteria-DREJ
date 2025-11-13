@@ -14,14 +14,43 @@ public class Concepto {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    private String unidadCompetente;
+
+    @Column(nullable = false)
+    private String pagina;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal precio;
 
     public Concepto() {}
 
-    public Concepto(String nombre, BigDecimal precio) {
+    public Concepto(Long id, String nombre, String unidadCompetente, String pagina, BigDecimal precio) {
+        this.id = id;
         this.nombre = nombre;
+        this.unidadCompetente = unidadCompetente;
+        this.pagina = pagina;
         this.precio = precio;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUnidadCompetente() {
+        return unidadCompetente;
+    }
+
+    public void setUnidadCompetente(String unidadCompetente) {
+        this.unidadCompetente = unidadCompetente;
+    }
+
+    public String getPagina() {
+        return pagina;
+    }
+
+    public void setPagina(String pagina) {
+        this.pagina = pagina;
     }
 
     public Long getId() {

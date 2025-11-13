@@ -1,0 +1,42 @@
+<h2>Boletas pendientes</h2>
+
+<div *ngIf="loading">Cargando boletas... (^-^)</div>
+
+<div *ngIf="message" style="color:green; margin-top:8px;">{{ message }}</div>
+<div *ngIf="error" style="color:darkred; margin-top:8px;">{{ error }}</div>
+
+<table *ngIf="!loading && boletas.length > 0" border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; margin-top:12px;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre cliente</th>
+      <th>Documento</th>
+      <th>Dirección</th>
+      <th>Fecha emisión</th>
+      <th>Encargado (DNI)</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let b of boletas">
+      <td>{{ b.id }}</td>
+      <td>{{ b.nombre }}</td>
+      <td>{{ b.documentoIdentidad }}</td>
+      <td>{{ b.direccion }}</td>
+      <td>{{ b.fechaEmision }}</td>
+      <td>{{ b.dniEncargado }}</td>
+      <td>{{ b.estado }}</td>
+      <td>
+        <button
+          type="button"
+          (click)="marcarPagada(b)"
+          [disabled]="processingId === b.id || b.estado === 'PAGADA'">Marcar como pagada</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!loading && boletas.length === 0" style="margin-top:12px;">
+  No hay boletas pendientes.
+</div>

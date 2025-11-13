@@ -19,12 +19,16 @@ public class Usuario {
     @Column(nullable = true)
     private String nombreCompleto;
 
+    @Column
+    private String rol;
+
     public Usuario() {}
 
-    public Usuario(String dni, String passwordHash, String nombreCompleto) {
+    public Usuario(String dni, String passwordHash, String nombreCompleto, String rol) {
         this.dni = dni;
         this.passwordHash = passwordHash;
         this.nombreCompleto = nombreCompleto;
+        this.rol = rol;
     }
 
     // getters y setters
@@ -35,6 +39,14 @@ public class Usuario {
     public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 
     public String getDni() {
