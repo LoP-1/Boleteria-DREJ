@@ -1,75 +1,263 @@
-<h2>Registrar usuario</h2>
-<form (ngSubmit)="register()">
-  <div>
-    <label for="r-dni">DNI</label><br />
-    <input id="r-dni" name="r-dni" required [(ngModel)]="registerModel.dni" />
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 border-b-4 border-blue-500 pb-3 inline-block">
+        Gestion de Usuarios
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <!-- Columna izquierda: Formularios -->
+      <div class="xl:col-span-2 space-y-6">
+        <!-- Formulario de registro -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4">
+            Registrar nuevo usuario
+          </h3>
+
+          <form (ngSubmit)="register()" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="r-dni" class="block text-sm font-medium text-gray-700 mb-1">
+                  DNI <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="r-dni"
+                  name="r-dni"
+                  required
+                  [(ngModel)]="registerModel.dni"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  placeholder="Ingrese DNI" />
+              </div>
+
+              <div>
+                <label for="r-nombre" class="block text-sm font-medium text-gray-700 mb-1">
+                  Nombre completo <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="r-nombre"
+                  name="r-nombre"
+                  required
+                  [(ngModel)]="registerModel.nombreCompleto"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  placeholder="Nombre y apellidos" />
+              </div>
+
+              <div>
+                <label for="r-pass" class="block text-sm font-medium text-gray-700 mb-1">
+                  Contraseña <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="r-pass"
+                  name="r-pass"
+                  type="password"
+                  required
+                  [(ngModel)]="registerModel.password"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  placeholder="Contraseña" />
+              </div>
+
+              <div>
+                <label for="r-rol" class="block text-sm font-medium text-gray-700 mb-1">
+                  Rol
+                </label>
+                <select
+                  id="r-rol"
+                  name="r-rol"
+                  [(ngModel)]="registerModel.rol"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                  <option value="">-- Seleccionar --</option>
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button
+                type="submit"
+                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Registrar Usuario
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Buscar y editar -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4">
+            Buscar y editar usuario
+          </h3>
+
+          <div class="mb-6">
+            <label for="searchDni" class="block text-sm font-medium text-gray-700 mb-2">
+              Buscar por DNI
+            </label>
+            <div class="flex gap-3">
+              <input
+                id="searchDni"
+                placeholder="Ingrese DNI o seleccione de la lista"
+                [(ngModel)]="searchDni"
+                name="searchDni"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+              <button
+                (click)="find()"
+                class="px-6 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Buscar
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="currentUser" class="border-t border-gray-200 pt-6">
+            <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                Informacion actual
+              </h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex">
+                  <span class="font-medium text-gray-600 w-32">DNI:</span>
+                  <span class="text-gray-900">{{ currentUser.dni }}</span>
+                </div>
+                <div class="flex">
+                  <span class="font-medium text-gray-600 w-32">Nombre:</span>
+                  <span class="text-gray-900">{{ currentUser.nombreCompleto }}</span>
+                </div>
+                <div *ngIf="currentUser.rol" class="flex">
+                  <span class="font-medium text-gray-600 w-32">Rol:</span>
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                    {{ currentUser.rol }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-lg font-semibold text-gray-700 mb-4">
+                Editar datos
+              </h4>
+
+              <form (ngSubmit)="saveEdit()" class="space-y-4">
+                <div>
+                  <label for="e-nombre" class="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre completo
+                  </label>
+                  <input
+                    id="e-nombre"
+                    name="e-nombre"
+                    [(ngModel)]="editModel.nombreCompleto"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    placeholder="Nuevo nombre" />
+                </div>
+
+                <div>
+                  <label for="e-pass" class="block text-sm font-medium text-gray-700 mb-1">
+                    Nueva contraseña
+                    <span class="text-xs text-gray-500 font-normal ml-2">(dejar vacio para mantener actual)</span>
+                  </label>
+                  <input
+                    id="e-pass"
+                    name="e-pass"
+                    type="password"
+                    [(ngModel)]="editModel.password"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    placeholder="Solo si desea cambiarla" />
+                </div>
+
+                <div>
+                  <label for="e-rol" class="block text-sm font-medium text-gray-700 mb-1">
+                    Rol
+                  </label>
+                  <select
+                    id="e-rol"
+                    name="e-rol"
+                    [(ngModel)]="editModel.rol"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <option value="">-- Sin cambios --</option>
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    Guardar Cambios
+                  </button>
+                  <button
+                    type="button"
+                    (click)="delete()"
+                    class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                    Eliminar Usuario
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div *ngIf="!currentUser" class="text-center py-8 text-gray-500">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <p>Busca un usuario por DNI o selecciona uno de la lista</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Lista de usuarios -->
+      <div class="xl:col-span-1">
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4">
+            Lista de Usuarios ({{ usuarios.length }})
+          </h3>
+
+          <div *ngIf="loadingList" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-sm text-gray-600">Cargando...</p>
+          </div>
+
+          <div *ngIf="!loadingList && usuarios.length > 0" class="space-y-2 max-h-[600px] overflow-y-auto">
+            <div
+              *ngFor="let usuario of usuarios"
+              (click)="selectUsuario(usuario)"
+              class="p-3 border border-gray-200 rounded-md hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all duration-200"
+              [class.bg-blue-100]="currentUser?.dni === usuario.dni"
+              [class.border-blue-400]="currentUser?.dni === usuario.dni">
+              <div class="flex justify-between items-start">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-gray-900 truncate">
+                    {{ usuario.nombreCompleto }}
+                  </p>
+                  <p class="text-xs text-gray-600 mt-1">
+                    DNI: {{ usuario.dni }}
+                  </p>
+                </div>
+                <span
+                  *ngIf="usuario.rol"
+                  class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                  [class.bg-purple-100]="usuario.rol === 'ADMIN'"
+                  [class.text-purple-800]="usuario.rol === 'ADMIN'"
+                  [class.bg-green-100]="usuario.rol === 'USER'"
+                  [class.text-green-800]="usuario.rol === 'USER'">
+                  {{ usuario.rol }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingList && usuarios.length === 0" class="text-center py-8 text-gray-500">
+            <p class="text-sm">No hay usuarios registrados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="message" class="mt-6 p-4 bg-green-50 border border-green-200 rounded-md text-green-700">
+      {{ message }}
+    </div>
+    <div *ngIf="error" class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
+      {{ error }}
+    </div>
   </div>
-
-  <div>
-    <label for="r-nombre">Nombre completo</label><br />
-    <input id="r-nombre" name="r-nombre" required [(ngModel)]="registerModel.nombreCompleto" />
-  </div>
-
-  <div>
-    <label for="r-pass">Contraseña</label><br />
-    <input id="r-pass" name="r-pass" type="password" required [(ngModel)]="registerModel.password" />
-  </div>
-
-  <div>
-    <label for="r-rol">Rol</label><br />
-    <select id="r-rol" name="r-rol" [(ngModel)]="registerModel.rol">
-      <option value="">-- (ninguno) --</option>
-      <option value="USER">USER</option>
-      <option value="ADMIN">ADMIN</option>
-    </select>
-  </div>
-
-  <div style="margin-top:8px;">
-    <button type="submit">Registrar</button>
-  </div>
-</form>
-
-<hr />
-
-<h2>Buscar / Editar usuario</h2>
-
-<div>
-  <input placeholder="DNI" [(ngModel)]="searchDni" name="searchDni" />
-  <button (click)="find()">Buscar</button>
 </div>
-
-<div *ngIf="currentUser" style="margin-top:12px;">
-  <h3>Datos</h3>
-  <div><strong>DNI:</strong> {{ currentUser.dni }}</div>
-  <div><strong>Nombre:</strong> {{ currentUser.nombreCompleto }}</div>
-  <div *ngIf="currentUser.rol"><strong>Rol:</strong> {{ currentUser.rol }}</div>
-  <h4>Editar</h4>
-  <form (ngSubmit)="saveEdit()">
-    <div>
-      <label for="e-nombre">Nombre completo</label><br />
-      <input id="e-nombre" name="e-nombre" [(ngModel)]="editModel.nombreCompleto" />
-    </div>
-
-    <div>
-      <label for="e-pass">Nueva contraseña</label><br />
-      <input id="e-pass" name="e-pass" type="password" [(ngModel)]="editModel.password" />
-    </div>
-
-    <div>
-      <label for="e-rol">Rol</label><br />
-      <select id="e-rol" name="e-rol" [(ngModel)]="editModel.rol">
-        <option value="">-- (sin cambios) --</option>
-        <option value="USER">USER</option>
-        <option value="ADMIN">ADMIN</option>
-      </select>
-    </div>
-
-    <div style="margin-top:8px;">
-      <button type="submit">Guardar</button>
-      <button type="button" (click)="delete()">Eliminar</button>
-    </div>
-  </form>
-</div>
-
-<div *ngIf="message" style="color:green; margin-top:8px;">{{ message }}</div>
-<div *ngIf="error" style="color:darkred; margin-top:8px;">{{ error }}</div>

@@ -1,0 +1,289 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-full mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 border-b-4 border-blue-500 pb-3 inline-block">
+        Listado de Boletas
+      </h2>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="message" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-md text-green-700">
+      {{ message }}
+    </div>
+    <div *ngIf="error" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
+      {{ error }}
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+        </svg>
+        Filtros de Busqueda
+      </h3>
+
+      <div class="space-y-4">
+        <!-- Fila 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label for="filterId" class="block text-sm font-medium text-gray-700 mb-1">
+              ID
+            </label>
+            <input
+              id="filterId"
+              type="number"
+              [(ngModel)]="filterId"
+              name="filterId"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Buscar por ID" />
+          </div>
+
+          <div>
+            <label for="filterName" class="block text-sm font-medium text-gray-700 mb-1">
+              Nombre Cliente
+            </label>
+            <input
+              id="filterName"
+              [(ngModel)]="filterName"
+              name="filterName"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Buscar por nombre" />
+          </div>
+
+          <div>
+            <label for="filterClienteDni" class="block text-sm font-medium text-gray-700 mb-1">
+              DNI Cliente
+            </label>
+            <input
+              id="filterClienteDni"
+              [(ngModel)]="filterClienteDni"
+              name="filterClienteDni"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Buscar por DNI" />
+          </div>
+        </div>
+
+        <!-- Fila 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label for="filterEncargadoDni" class="block text-sm font-medium text-gray-700 mb-1">
+              DNI Encargado
+            </label>
+            <input
+              id="filterEncargadoDni"
+              [(ngModel)]="filterEncargadoDni"
+              name="filterEncargadoDni"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="DNI encargado" />
+          </div>
+
+          <div>
+            <label for="filterEstado" class="block text-sm font-medium text-gray-700 mb-1">
+              Estado
+            </label>
+            <select
+              id="filterEstado"
+              [(ngModel)]="filterEstado"
+              name="filterEstado"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors">
+              <option value="ALL">Todos</option>
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="PAGADA">Pagada</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterFrom" class="block text-sm font-medium text-gray-700 mb-1">
+              Desde
+            </label>
+            <input
+              id="filterFrom"
+              type="date"
+              [(ngModel)]="filterFrom"
+              name="filterFrom"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+          </div>
+
+          <div>
+            <label for="filterTo" class="block text-sm font-medium text-gray-700 mb-1">
+              Hasta
+            </label>
+            <input
+              id="filterTo"
+              type="date"
+              [(ngModel)]="filterTo"
+              name="filterTo"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex flex-wrap gap-3 pt-2">
+          <button
+            type="button"
+            (click)="applyFilters()"
+            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Aplicar Filtros
+          </button>
+          <button
+            type="button"
+            (click)="resetFilters()"
+            class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            Limpiar Filtros
+          </button>
+          <button
+            type="button"
+            (click)="loadAll()"
+            class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            Recargar Todo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600">Cargando...</p>
+    </div>
+
+    <!-- Tabla -->
+    <div *ngIf="!loading && filtered.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Cliente</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Documento</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Direccion</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Encargado</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Total</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <ng-container *ngFor="let b of paged">
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ b.id }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ b.nombre }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ b.documentoIdentidad }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">
+                  {{ b.fechaEmision ? (b.fechaEmision | date:'dd/MM/yyyy') : '-' }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ b.direccion || '-' }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ b.dniEncargado || '-' }}</td>
+                <td class="px-4 py-3 text-center">
+                  <span
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                    [class.bg-yellow-100]="b.estado === 'PENDIENTE'"
+                    [class.text-yellow-800]="b.estado === 'PENDIENTE'"
+                    [class.bg-green-100]="b.estado === 'PAGADA'"
+                    [class.text-green-800]="b.estado === 'PAGADA'">
+                    {{ b.estado }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-sm text-right font-semibold text-gray-900">
+                  S/. {{ totalBoleta(b) | number:'1.2-2' }}
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="flex justify-center gap-2">
+                    <button
+                      type="button"
+                      (click)="toggleExpand(b)"
+                      class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
+                      {{ expandedId === b.id ? 'Ocultar' : 'Ver' }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="imprimirBoleta(b)"
+                      class="px-3 py-1 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1">
+                      Imprimir
+                    </button>
+                    <button
+                      type="button"
+                      (click)="marcarPagada(b)"
+                      [disabled]="b.estado === 'PAGADA'"
+                      class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+                      Pagar
+                    </button>
+                    <button
+                      type="button"
+                      (click)="eliminar(b)"
+                      class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila expandible -->
+              <tr *ngIf="expandedId === b.id" class="bg-gray-50">
+                <td colspan="9" class="px-4 py-4">
+                  <div class="bg-white rounded-md p-4 border border-gray-200">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Detalles de la Boleta</h4>
+                    <div class="overflow-x-auto">
+                      <table class="min-w-full text-sm">
+                        <thead class="bg-gray-100">
+                          <tr>
+                            <th class="px-3 py-2 text-left font-medium text-gray-700">Concepto</th>
+                            <th class="px-3 py-2 text-center font-medium text-gray-700">Cantidad</th>
+                            <th class="px-3 py-2 text-right font-medium text-gray-700">Precio Unit.</th>
+                            <th class="px-3 py-2 text-right font-medium text-gray-700">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                          <tr *ngFor="let d of (b.detalles || [])" class="hover:bg-gray-50">
+                            <td class="px-3 py-2 text-gray-700">{{ getConceptoNombre(b) }}</td>
+                            <td class="px-3 py-2 text-center text-gray-700">{{ d.cantidad }}</td>
+                            <td class="px-3 py-2 text-right text-gray-700">S/. {{ d.precioUnitario | number:'1.2-2' }}</td>
+                            <td class="px-3 py-2 text-right font-semibold text-gray-900">
+                              S/. {{ (d.precioUnitario * d.cantidad) | number:'1.2-2' }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!loading && filtered.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <p class="mt-4 text-gray-500">No se encontraron boletas</p>
+    </div>
+
+    <!-- Paginacion -->
+    <div *ngIf="filtered.length > pageSize" class="mt-6 flex justify-center items-center gap-4">
+      <button
+        (click)="prevPage()"
+        [disabled]="page === 1"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Anterior
+      </button>
+      
+      <span class="text-sm font-medium text-gray-700">
+        Pagina <span class="font-bold">{{ page }}</span> de <span class="font-bold">{{ Math.ceil(filtered.length / pageSize) }}</span>
+      </span>
+      
+      <button
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= filtered.length"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Siguiente
+      </button>
+    </div>
+  </div>
+</div>

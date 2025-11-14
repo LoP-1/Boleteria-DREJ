@@ -1,0 +1,128 @@
+<div *ngIf="loading" class="flex items-center justify-center min-h-screen">
+  <p class="text-lg text-gray-600">Cargando boleta...</p>
+</div>
+
+<div *ngIf="error" class="flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <p class="text-lg text-red-600 mb-4">{{ error }}</p>
+    <button
+      (click)="volver()"
+      class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+      Volver al inicio
+    </button>
+  </div>
+</div>
+
+<div *ngIf="boleta && !loading">
+  <!-- Botones de accion -->
+  <div class="no-print sticky top-0 z-50 bg-white border-b border-gray-300 shadow-sm mb-4 p-4">
+    <div class="max-w-4xl mx-auto flex justify-end gap-3">
+      <button
+        (click)="volver()"
+        class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">
+        Volver
+      </button>
+      <button
+        (click)="imprimir()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Imprimir
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido de la boleta -->
+  <div class="max-w-4xl mx-auto p-8 bg-white">
+    <!-- Header con logo y datos del documento -->
+    <div class="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-800">
+      <!-- Logo y datos de la empresa -->
+      <div class="flex items-start gap-4">
+        <img src="/logo-drej.png" alt="Logo" class="w-20 h-20 object-contain" />
+        <div>
+          <h2 class="text-sm font-bold text-blue-700 uppercase">Ministerio de Educacion</h2>
+          <p class="text-xs text-gray-700 leading-tight">
+            Direccion Regional de Educacion - Junin<br>
+            HUANCAYO
+          </p>
+        </div>
+      </div>
+      
+      <!-- RUC y numero de documento -->
+      <div class="text-right">
+        <p class="text-sm font-bold text-blue-700">R.U.C. 20188468706</p>
+        <h1 class="text-base font-bold text-gray-800 mt-1">RECIBO DE INGRESO</h1>
+        <p class="text-xl font-bold text-red-600 mt-1">{{boleta.id}} - N° 114177</p>
+      </div>
+    </div>
+    
+    <!-- Direccion centrada -->
+    <div class="text-center text-sm py-3 border-b border-gray-400 mb-5">
+      Jr. Julio C. Tello 776 - El Tambo - Huancayo
+    </div>
+    
+    <!-- Informacion del cliente -->
+    <div class="space-y-2 mb-6">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-blue-700 w-28">Señor (es):</span>
+        <span class="flex-1 text-sm border-b border-dotted border-gray-400 pb-1">{{ boleta.nombre }}</span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-blue-700 w-28">Direccion:</span>
+        <span class="flex-1 text-sm border-b border-dotted border-gray-400 pb-1">{{ boleta.direccion || '' }}</span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-blue-700 w-28">Doc. de Ident.:</span>
+        <span class="flex-1 text-sm border-b border-dotted border-gray-400 pb-1">{{ boleta.documentoIdentidad }}</span>
+        <span class="text-sm font-semibold text-blue-700 ml-4">Fecha de Emision:</span>
+        <span class="text-sm border-b border-dotted border-gray-400 pb-1 w-32">{{ formatDate(boleta.fechaEmision) }}</span>
+      </div>
+    </div>
+    
+    <!-- Tabla de items -->
+    <div class="border-0.5 border-gray-800 mb-4">
+      <table class="w-full">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border border-gray-800 px-3 py-2 text-xs font-bold text-gray-700 uppercase w-16">CANT.</th>
+            <th class="border border-gray-800 px-3 py-2 text-xs font-bold text-gray-700 uppercase">DESCRIPCION</th>
+            <th class="border border-gray-800 px-3 py-2 text-xs font-bold text-gray-700 uppercase w-28">V. UNIT.</th>
+            <th class="border border-gray-800 px-3 py-2 text-xs font-bold text-gray-700 uppercase w-28">IMPORTE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detalle of boleta.detalles" class="hover:bg-gray-50">
+            <td class="border border-gray-800 px-3 py-2 text-center text-sm">{{ detalle.cantidad }}</td>
+            <td class="border border-gray-800 px-3 py-2 text-sm">{{ getConceptoNombre(detalle) }}</td>
+            <td class="border border-gray-800 px-3 py-2 text-right text-sm">{{ getPrecioUnitario(detalle) | number:'1.2-2' }}</td>
+            <td class="border border-gray-800 px-3 py-2 text-right text-sm font-semibold">{{ getSubtotal(detalle) | number:'1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="!boleta.detalles || boleta.detalles.length === 0">
+            <td colspan="4" class="border border-gray-800 px-3 py-8 text-center text-sm text-gray-500">
+              Sin detalles
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Total -->
+    <div class="flex justify-end mb-4">
+      <div class="border-1 border-gray-800 px-6 py-3 min-w-[200px]">
+        <p class="text-sm font-bold text-right text-gray-700">TOTAL</p>
+        <p class="text-2xl font-bold text-right text-gray-900 mt-1">S/. {{ getTotal() | number:'1.2-2' }}</p>
+      </div>
+    </div>
+    
+    <!-- Son -->
+    <div class="text-xs bg-gray-50 border border-gray-300 px-3 py-2 mb-6">
+      Son: ____________________________________________________________
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center pt-6 border-t border-dashed border-gray-400">
+      <p class="text-sm text-gray-600">Gracias por su preferencia</p>
+      <p class="text-xs text-gray-500 mt-2">Impreso el: {{ fechaImpresion | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+  </div>
+</div>

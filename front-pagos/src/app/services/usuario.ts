@@ -16,6 +16,10 @@ export class UsuarioService {
     return this.http.post(this.apiUrl, request);
   }
 
+  getAll(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.apiUrl);
+  }
+
   getByDni(dni: string): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/${dni}`);
   }

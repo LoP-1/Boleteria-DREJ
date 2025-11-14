@@ -32,6 +32,8 @@ public class ConceptoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Concepto no encontrado: " + id));
         if (cambios.getNombre() != null) c.setNombre(cambios.getNombre());
         if (cambios.getPrecio() != null) c.setPrecio(cambios.getPrecio());
+        if (cambios.getPagina() != null) c.setPagina(cambios.getPagina());
+        if (cambios.getUnidadCompetente() != null) c.setUnidadCompetente(cambios.getUnidadCompetente());
         return conceptoRepository.save(c);
     }
 

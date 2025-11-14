@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditUsuarioRequest, RegisterUsuarioRequest, Usuario } from '../../models/Usuario';
@@ -10,16 +10,41 @@ import { UsuarioService } from '../../services/usuario';
   imports: [CommonModule, FormsModule],
   templateUrl: './usuarios.html'
 })
-export class Usuarios {
-  // incluir rol en los modelos
+export class Usuarios implements OnInit {
   registerModel: RegisterUsuarioRequest = { dni: '', nombreCompleto: '', password: '', rol: '' };
   searchDni = '';
   currentUser: Usuario | null = null;
   editModel: EditUsuarioRequest = { nombreCompleto: '', password: '', rol: '' };
   message = '';
   error = '';
+  
+  usuarios: Usuario[] = [];
+  loadingList = false;
 
   constructor(private usuarioService: UsuarioService) {}
+
+  ngOnInit(): void {
+    this.loadUsuarios();
+  }
+
+  loadUsuarios(): void {
+    this.loadingList = true;
+    this.usuarioService.getAll().subscribe({
+      next: (data) => {
+        this.usuarios = data || [];
+        this.loadingList = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loadingList = false;
+      }
+    });
+  }
+
+  selectUsuario(usuario: Usuario): void {
+    this.searchDni = usuario.dni;
+    this.find();
+  }
 
   register(): void {
     this.message = '';
@@ -28,6 +53,7 @@ export class Usuarios {
       next: () => {
         this.message = 'Usuario registrado correctamente';
         this.registerModel = { dni: '', nombreCompleto: '', password: '', rol: '' };
+        this.loadUsuarios();
       },
       error: (err) => {
         console.error(err);
@@ -62,9 +88,31 @@ export class Usuarios {
 
   saveEdit(): void {
     if (!this.currentUser) return;
-    this.usuarioService.edit(this.currentUser.dni, this.editModel).subscribe({
+    
+    const payload: any = {};
+    
+    if (this.editModel.nombreCompleto && this.editModel.nombreCompleto.trim() !== '') {
+      payload.nombreCompleto = this.editModel.nombreCompleto.trim();
+    }
+    
+    if (this.editModel.password && this.editModel.password.trim() !== '') {
+      payload.password = this.editModel.password.trim();
+    }
+    
+    if (this.editModel.rol && this.editModel.rol !== '') {
+      payload.rol = this.editModel.rol;
+    }
+    
+    if (Object.keys(payload).length === 0) {
+      this.error = 'Debes modificar al menos un campo';
+      return;
+    }
+    
+    this.usuarioService.edit(this.currentUser.dni, payload).subscribe({
       next: () => {
-        this.message = 'Usuario actualizado';
+        this.message = 'Usuario actualizado correctamente';
+        this.editModel.password = '';
+        this.loadUsuarios();
         this.find();
       },
       error: (err) => {
@@ -76,11 +124,18 @@ export class Usuarios {
 
   delete(): void {
     if (!this.currentUser) return;
+    
+    if (!confirm(`Estas seguro de eliminar al usuario ${this.currentUser.nombreCompleto}?`)) {
+      return;
+    }
+    
     const dni = this.currentUser.dni;
     this.usuarioService.delete(dni).subscribe({
       next: () => {
-        this.message = 'Usuario eliminado';
+        this.message = 'Usuario eliminado correctamente';
         this.currentUser = null;
+        this.searchDni = '';
+        this.loadUsuarios();
       },
       error: (err) => {
         console.error(err);

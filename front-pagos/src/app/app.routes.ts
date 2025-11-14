@@ -4,6 +4,9 @@ import { Inicio } from './components/inicio/inicio';
 import { Usuarios } from './components/usuarios/usuarios';
 import { Conceptos } from './components/conceptos/conceptos';
 import { Boleta } from './components/boleta/boleta';
+import { BoletasList } from './components/boletas-list/boletas-list';
+import { Print } from './components/print/print'; 
+import { DashboardComponent } from './components/dashboard/dashboard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -15,11 +18,13 @@ export const routes: Routes = [
       { path: '', redirectTo: 'boleta', pathMatch: 'full' },
       { path: 'usuarios', component: Usuarios },
       { path: 'boleta', component: Boleta },
-      { path: 'conceptos', component: Conceptos }
+      { path: 'conceptos', component: Conceptos },
+      { path: 'lista', component: BoletasList },
+      {path: 'dashboard', component: DashboardComponent}
     ]
   },
-  { path: 'usuarios', redirectTo: '/inicio/usuarios', pathMatch: 'full' },
-  { path: 'conceptos', redirectTo: '/inicio/conceptos', pathMatch: 'full' },
-  { path: 'boleta', redirectTo: '/inicio/boleta', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' }
+  {
+    path: 'print/:id',
+    component: Print 
+  }
 ];

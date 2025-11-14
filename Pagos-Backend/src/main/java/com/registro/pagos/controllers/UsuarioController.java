@@ -6,6 +6,7 @@ import com.registro.pagos.exception.InvalidOperationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -65,8 +66,14 @@ public class UsuarioController {
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         Usuario u = usuarioService.findByDni(dni);
-        // Por seguridad, puedes eliminar passwordHash del body si no quieres exponerlo
         u.setPasswordHash(null);
         return ResponseEntity.ok(u);
     }
+
+    @GetMapping()
+    public ResponseEntity<?> getAllUsers(){
+        return ResponseEntity.ok(usuarioService.obtenerTodos());
+    }
+
+
 }

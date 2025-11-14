@@ -12,8 +12,12 @@ import { ConceptoService } from '../../services/concepto';
 })
 export class Conceptos implements OnInit {
   conceptos: Concepto[] = [];
-  // modelo para crear/editar
-  nueva: Partial<Concepto> = { nombre: '', precio: 0 };
+  nueva: Partial<Concepto> = { 
+    nombre: '', 
+    precio: 0,
+    unidadCompetente: '',
+    pagina: ''
+  };
   editingId: number | null = null;
   error = '';
 
@@ -35,13 +39,23 @@ export class Conceptos implements OnInit {
 
   startCreate(): void {
     this.editingId = null;
-    this.nueva = { nombre: '', precio: 0 };
+    this.nueva = { 
+      nombre: '', 
+      precio: 0,
+      unidadCompetente: '',
+      pagina: ''
+    };
   }
 
   save(): void {
     this.error = '';
+    
+    if (!this.nueva.nombre || !this.nueva.unidadCompetente || !this.nueva.pagina) {
+      this.error = 'Completa todos los campos requeridos';
+      return;
+    }
+    
     if (this.editingId != null) {
-      // update
       this.conceptoService.update(this.editingId, this.nueva as Concepto).subscribe({
         next: (res) => {
           this.loadAll();
@@ -53,7 +67,6 @@ export class Conceptos implements OnInit {
         }
       });
     } else {
-      // create
       this.conceptoService.create(this.nueva as Concepto).subscribe({
         next: (res) => {
           this.loadAll();
@@ -69,11 +82,18 @@ export class Conceptos implements OnInit {
 
   edit(con: Concepto): void {
     this.editingId = con.id ?? null;
-    this.nueva = { ...con };
+    this.nueva = { 
+      nombre: con.nombre,
+      precio: con.precio,
+      unidadCompetente: con.unidadCompetente,
+      pagina: con.pagina
+    };
   }
 
   remove(id?: number): void {
     if (!id) return;
+    if (!confirm('Estas seguro de eliminar este concepto?')) return;
+    
     this.conceptoService.delete(id).subscribe({
       next: () => this.loadAll(),
       error: (err) => {
@@ -81,5 +101,12 @@ export class Conceptos implements OnInit {
         this.error = 'Error eliminando concepto';
       }
     });
+  }
+
+  getConceptoNombre(detalle: any): string {
+    if (!detalle) return '-';
+    if (detalle.concepto && detalle.concepto.nombre) return detalle.concepto.nombre;
+    if (detalle.nombre) return detalle.nombre;
+    return '-';
   }
 }

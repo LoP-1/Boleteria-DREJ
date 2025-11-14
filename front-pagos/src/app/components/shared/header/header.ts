@@ -24,9 +24,15 @@ export class Header {
   goConceptos(): void {
     this.router.navigate(['/inicio/conceptos']);
   }
+  goDashboard(): void {
+    this.router.navigate(['/inicio/dashboard']);
+  }
 
   goBoletas(): void {
     this.router.navigate(['/inicio/boleta']);
+  }
+  goListaBoletas(): void {
+    this.router.navigate(['/inicio/lista']);
   }
 
   logout(): void {

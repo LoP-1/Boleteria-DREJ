@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Concepto } from '../../models/Concepto';
@@ -18,9 +18,7 @@ interface DetalleForm {
   imports: [CommonModule, FormsModule, ListaBoletas, HistorialUsuario],
   templateUrl: './boleta.html'
 })
-
 export class Boleta implements OnInit {
-  // Campos del formulario
   nombre = '';
   direccion = '';
   fechaEmision = '';
@@ -30,6 +28,11 @@ export class Boleta implements OnInit {
   dniEncargado: string | null = null;
 
   conceptos: Concepto[] = [];
+  conceptosFiltrados: Concepto[] = [];
+  busquedaConcepto = '';
+  mostrarAutocompletado = false;
+  
+  modoSeleccion: 'buscar' | 'seleccionar' = 'buscar';
 
   detalleModel: DetalleForm = { conceptoId: null, cantidad: 1 };
   detallesForm: Array<{ conceptoId: number; cantidad: number; nombre: string; precioUnitario: number; subtotal: number }> = [];
@@ -43,6 +46,16 @@ export class Boleta implements OnInit {
     private conceptoService: ConceptoService
   ) {}
 
+  // Cerrar dropdown al hacer click fuera
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: any): void {
+    const target = event.target;
+    const clickedInside = target.closest('.autocomplete-container');
+    if (!clickedInside) {
+      this.mostrarAutocompletado = false;
+    }
+  }
+
   ngOnInit(): void {
     this.dniEncargado = localStorage.getItem('dni');
     this.nombreEncargado = localStorage.getItem('nombreCompleto') || this.nombreEncargado;
@@ -51,12 +64,53 @@ export class Boleta implements OnInit {
 
   loadConceptos(): void {
     this.conceptoService.listAll().subscribe({
-      next: (data) => (this.conceptos = data || []),
+      next: (data) => {
+        this.conceptos = data || [];
+        this.conceptosFiltrados = [...this.conceptos];
+      },
       error: (err) => {
         console.error(err);
         this.error = 'No se pudieron cargar los conceptos';
       }
     });
+  }
+
+  filtrarConceptos(): void {
+    const busqueda = this.busquedaConcepto.toLowerCase().trim();
+    
+    if (busqueda === '') {
+      // Mostrar todos limitado a 10
+      this.conceptosFiltrados = this.conceptos.slice(0, 10);
+      this.mostrarAutocompletado = true;
+      return;
+    }
+
+    // Filtrar por nombre
+    this.conceptosFiltrados = this.conceptos
+      .filter(c => c.nombre.toLowerCase().includes(busqueda))
+      .slice(0, 10); // Limitar a 10 resultados
+    
+    this.mostrarAutocompletado = this.conceptosFiltrados.length > 0;
+  }
+
+  seleccionarConcepto(concepto: Concepto): void {
+    this.detalleModel.conceptoId = concepto.id ?? null;
+    this.busquedaConcepto = concepto.nombre;
+    this.mostrarAutocompletado = false;
+  }
+  
+  cambiarModoSeleccion(modo: 'buscar' | 'seleccionar'): void {
+    this.modoSeleccion = modo;
+    this.detalleModel.conceptoId = null;
+    this.busquedaConcepto = '';
+    this.mostrarAutocompletado = false;
+  }
+  
+  onSelectChange(): void {
+    const concepto = this.conceptos.find(c => c.id === this.detalleModel.conceptoId);
+    if (concepto) {
+      this.busquedaConcepto = concepto.nombre;
+    }
   }
 
   agregarDetalle(): void {
@@ -65,7 +119,7 @@ export class Boleta implements OnInit {
     const cantidad = this.detalleModel.cantidad;
 
     if (!conceptoId || cantidad <= 0) {
-      this.error = 'Selecciona un concepto y una cantidad válida';
+      this.error = 'Selecciona un concepto y una cantidad valida';
       return;
     }
 
@@ -78,7 +132,6 @@ export class Boleta implements OnInit {
     const precioUnitario = concepto.precio;
     const subtotal = Number((precioUnitario * cantidad).toFixed(2));
 
-    // si ya existe el concepto en detalles, acumular cantidad
     const existente = this.detallesForm.find(d => d.conceptoId === conceptoId);
     if (existente) {
       existente.cantidad += cantidad;
@@ -93,8 +146,9 @@ export class Boleta implements OnInit {
       });
     }
 
-    // reset modelo de detalle
     this.detalleModel = { conceptoId: null, cantidad: 1 };
+    this.busquedaConcepto = '';
+    this.mostrarAutocompletado = false;
   }
 
   quitarDetalle(conceptoId: number): void {
@@ -118,11 +172,11 @@ export class Boleta implements OnInit {
       return;
     }
     if (!this.fechaEmision) {
-      this.error = 'Ingresa la fecha de emisión';
+      this.error = 'Ingresa la fecha de emision';
       return;
     }
     if (!this.dniEncargado) {
-      this.error = 'No se encontró el DNI del encargado en localStorage';
+      this.error = 'No se encontro el DNI del encargado en localStorage';
       return;
     }
     if (this.detallesForm.length === 0) {
@@ -144,7 +198,6 @@ export class Boleta implements OnInit {
       next: (res) => {
         this.loading = false;
         this.message = 'Boleta creada correctamente';
-        // limpiar formulario
         this.nombre = '';
         this.direccion = '';
         this.fechaEmision = '';

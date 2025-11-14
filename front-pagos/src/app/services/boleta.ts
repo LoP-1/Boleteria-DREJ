@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Boleta, BoletaRequest } from '../models/Boleta';
 import { environment } from '../../environments/environment';
 
@@ -10,7 +11,24 @@ import { environment } from '../../environments/environment';
 export class BoletaService {
   private apiUrl = environment.apiUrl + '/boletas';
 
+  private boletaCreada$ = new Subject<void>();
+  private boletaPagada$ = new Subject<void>();
+  private boletaEliminada$ = new Subject<void>();
+
   constructor(private http: HttpClient) {}
+
+  // Observables publicos para que los componentes se suscriban
+  get onBoletaCreada(): Observable<void> {
+    return this.boletaCreada$.asObservable();
+  }
+
+  get onBoletaPagada(): Observable<void> {
+    return this.boletaPagada$.asObservable();
+  }
+
+  get onBoletaEliminada(): Observable<void> {
+    return this.boletaEliminada$.asObservable();
+  }
 
   private getHeaders(): HttpHeaders {
     const dni = localStorage.getItem('dni');
@@ -30,15 +48,27 @@ export class BoletaService {
   create(request: BoletaRequest): Observable<Boleta> {
     return this.http.post<Boleta>(this.apiUrl, request, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(() => {
+        this.boletaCreada$.next();
+      })
+    );
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      tap(() => {
+        this.boletaEliminada$.next();
+      })
+    );
   }
 
   markPaid(id: number): Observable<Boleta> {
-    return this.http.post<Boleta>(`${this.apiUrl}/${id}/pagada`, {});
+    return this.http.post<Boleta>(`${this.apiUrl}/${id}/pagada`, {}).pipe(
+      tap(() => {
+        this.boletaPagada$.next();
+      })
+    );
   }
 
   listPendientes(): Observable<Boleta[]> {

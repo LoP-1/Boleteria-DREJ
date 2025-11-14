@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { BoletaService } from '../../../services/boleta';
 import { Boleta } from '../../../models/Boleta';
 
@@ -9,12 +10,14 @@ import { Boleta } from '../../../models/Boleta';
   imports: [CommonModule],
   templateUrl: './historial-usuario.html'
 })
-export class HistorialUsuario implements OnInit {
+export class HistorialUsuario implements OnInit, OnDestroy {
   boletas: Boleta[] = [];
   loading = false;
   error = '';
   nombreEncargado: string | null = null;
   dniEncargado: string | null = null;
+  
+  private subscriptions: Subscription[] = [];
 
   constructor(private boletaService: BoletaService) {}
 
@@ -22,12 +25,22 @@ export class HistorialUsuario implements OnInit {
     this.dniEncargado = localStorage.getItem('dni');
     this.nombreEncargado = localStorage.getItem('nombreCompleto');
     this.loadHistorial();
+
+    this.subscriptions.push(
+      this.boletaService.onBoletaPagada.subscribe(() => {
+        this.loadHistorial();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   loadHistorial(): void {
     this.error = '';
     if (!this.dniEncargado) {
-      this.error = 'No se encontró DNI del encargado en localStorage';
+      this.error = 'No se encontro DNI del encargado';
       return;
     }
 
@@ -45,12 +58,18 @@ export class HistorialUsuario implements OnInit {
     });
   }
 
+  imprimirBoleta(boleta: Boleta): void {
+    if (boleta.id) {
+      window.open(`/print/${boleta.id}`, '_blank');
+    }
+  }
+
   conceptoNombre(d: any): string {
-    if (!d) return '—';
+    if (!d) return '---';
     if (d.concepto && (d.concepto.nombre || d.concepto.nombre === '')) return d.concepto.nombre;
     if (d.nombre) return d.nombre;
     if (typeof d.concepto === 'number' || typeof d.concepto === 'string') return `ID:${d.concepto}`;
-    return '—';
+    return '---';
   }
 
   precioUnitario(d: any): number {

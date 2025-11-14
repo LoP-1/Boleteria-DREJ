@@ -1,14 +1,63 @@
-<nav>
-  <div>
-    <button *ngIf="role === 'ADMIN'" (click)="goUsuarios()">Usuarios</button>
-    <button *ngIf="role === 'ADMIN'" (click)="goConceptos()">Conceptos</button>
+<nav class="bg-white shadow-md border-b border-gray-200 sticky top-0 z-50">
+  <div class="max-w-full mx-auto px-6">
+    <div class="flex justify-between items-stretch h-16">
+      <!-- Logo y navegacion principal -->
+      <div class="flex items-stretch space-x-0">
+        <!-- Logo -->
+        <div class="flex items-center px-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-r border-gray-200">
+          <img src="logo-drej.png" alt="Logo" class="h-10 w-auto object-contain">
+        </div>
+        
+        <!-- Botones de navegacion -->
+        <button
+          *ngIf="role === 'ADMIN'"
+          (click)="goUsuarios()"
+          class="px-6 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 border-r border-gray-200 transition-all duration-200 focus:outline-none focus:bg-blue-50">
+          Usuarios
+        </button>
+        
+        <button
+          *ngIf="role === 'ADMIN'"
+          (click)="goConceptos()"
+          class="px-6 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 border-r border-gray-200 transition-all duration-200 focus:outline-none focus:bg-blue-50">
+          Conceptos
+        </button>
+        
+        <button
+          *ngIf="role === 'ADMIN'"
+          (click)="goListaBoletas()"
+          class="px-6 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 border-r border-gray-200 transition-all duration-200 focus:outline-none focus:bg-blue-50">
+          Historial Boletas
+        </button>
 
-    <button (click)="goBoletas()">Boletas</button>
-  </div>
+        <button
+          (click)="goBoletas()"
+          class="px-6 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 border-r border-gray-200 transition-all duration-200 focus:outline-none focus:bg-blue-50">
+          Boletas
+        </button>
+        <button
+          (click)="goDashboard()"
+          class="px-6 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 border-r border-gray-200 transition-all duration-200 focus:outline-none focus:bg-blue-50">
+          Dashboard
+        </button>
+      </div>
 
-  <div style="float:right;">
-    <span *ngIf="nombre">Bienvenido, {{ nombre }}</span>
-    <button (click)="logout()">Salir</button>
-  </div>
+      <!-- Usuario y logout -->
+      <div class="flex items-stretch">
+        <div class="flex items-center px-4 border-l border-gray-200">
+          <span
+            *ngIf="nombre"
+            class="text-sm font-medium text-gray-600 hidden sm:inline">
+            Bienvenido, <span class="font-semibold text-gray-800">{{ nombre }}</span>
+          </span>
+        </div>
+        
+        <button
+          (click)="logout()"
+          class="px-6 text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 border-l border-blue-400 transition-all duration-200 focus:outline-none">
+          Salir
+        </button>
+      </div>
+    </div>
+  </div> 
 </nav>
-<hr />

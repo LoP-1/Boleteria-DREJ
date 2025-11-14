@@ -1,0 +1,108 @@
+<div class="p-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Dashboard de Boletas</h1>
+    <div class="flex gap-3 items-center">
+      <label class="text-sm">Desde
+        <input type="date" [(ngModel)]="dateFrom" class="ml-2 px-2 py-1 border rounded-md" />
+      </label>
+      <label class="text-sm">Hasta
+        <input type="date" [(ngModel)]="dateTo" class="ml-2 px-2 py-1 border rounded-md" />
+      </label>
+      <input type="text" placeholder="unidadCompetente" [(ngModel)]="unidadCompetente"
+             class="px-2 py-1 border rounded-md" />
+      <button (click)="applyFilters()" class="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700">Aplicar</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white shadow p-4 rounded">
+      <div class="text-sm text-gray-500">Total boletas</div>
+      <div class="text-2xl font-bold">{{ summary?.totalBoletas ?? '-' }}</div>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <div class="text-sm text-gray-500">Total facturado</div>
+      <div class="text-2xl font-bold">{{ formatMoney(summary?.totalFacturado) }}</div>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <div class="text-sm text-gray-500">Total pendientes</div>
+      <div class="text-2xl font-bold">{{ summary?.totalPendientes ?? '-' }}</div>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <div class="text-sm text-gray-500">Total items</div>
+      <div class="text-2xl font-bold">{{ summary?.totalItems ?? '-' }}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="bg-white shadow p-4 rounded">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-medium">Ingresos por periodo</h2>
+        <div class="text-sm text-gray-500">Rango: {{ dateFrom }} → {{ dateTo }}</div>
+      </div>
+
+      <div class="w-full h-80">
+        <div *ngIf="!chartDataRevenue.labels || chartDataRevenue.labels.length === 0" class="text-gray-500">No hay datos para este rango.</div>
+
+        <canvas *ngIf="chartDataRevenue.labels && chartDataRevenue.labels.length > 0"
+                baseChart
+                [data]="chartDataRevenue"
+                [options]="chartOptionsRevenue"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="bg-white shadow p-4 rounded">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-medium">Top conceptos (por monto)</h2>
+        <div class="flex gap-2">
+          <button (click)="exportVentasPorDia()" 
+                  class="bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-purple-700 text-sm"
+                  [disabled]="exportLoading">
+            {{ exportLoading ? 'Exportando...' : 'Ventas/día' }}
+          </button>
+          <button (click)="exportBoletasDetalladas()" 
+                  class="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 text-sm"
+                  [disabled]="exportLoading">
+            {{ exportLoading ? 'Exportando...' : 'Detalle' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full h-80">
+        <div *ngIf="!chartDataTop.labels || chartDataTop.labels.length === 0" class="text-gray-500">No hay conceptos en el periodo.</div>
+
+        <canvas *ngIf="chartDataTop.labels && chartDataTop.labels.length > 0"
+                baseChart
+                [data]="chartDataTop"
+                [options]="chartOptionsTop"
+                [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow p-4 rounded">
+    <h3 class="text-lg font-medium mb-3">Lista - Top conceptos</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left">
+        <thead>
+          <tr class="text-sm text-gray-600">
+            <th class="py-2 px-3">#</th>
+            <th class="py-2 px-3">Concepto</th>
+            <th class="py-2 px-3">Cantidad</th>
+            <th class="py-2 px-3">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of topConcepts; let i = index" class="border-t">
+            <td class="py-2 px-3">{{ i + 1 }}</td>
+            <td class="py-2 px-3">{{ c.nombre }}</td>
+            <td class="py-2 px-3">{{ c.cantidad }}</td>
+            <td class="py-2 px-3">{{ formatMoney(c.monto) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

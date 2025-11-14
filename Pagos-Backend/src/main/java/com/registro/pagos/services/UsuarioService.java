@@ -7,6 +7,7 @@ import com.registro.pagos.exception.InvalidOperationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -56,5 +57,10 @@ public class UsuarioService {
     public Usuario findByDni(String dni) {
         return usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + dni));
+    }
+
+    //Obtener todos los usuarios
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.findAll();
     }
 }
