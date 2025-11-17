@@ -18,6 +18,7 @@ public class ConceptoService {
         this.conceptoRepository = conceptoRepository;
     }
 
+    // Crea un nuevo concepto
     @Transactional
     public Concepto createConcepto(Concepto c) {
         if (c.getNombre() == null || c.getNombre().isBlank()) {
@@ -26,10 +27,12 @@ public class ConceptoService {
         return conceptoRepository.save(c);
     }
 
+    // Actualiza un concepto existente
     @Transactional
     public Concepto updateConcepto(Long id, Concepto cambios) {
         Concepto c = conceptoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concepto no encontrado: " + id));
+        // Actualiza campos si no son null
         if (cambios.getNombre() != null) c.setNombre(cambios.getNombre());
         if (cambios.getPrecio() != null) c.setPrecio(cambios.getPrecio());
         if (cambios.getPagina() != null) c.setPagina(cambios.getPagina());
@@ -37,6 +40,7 @@ public class ConceptoService {
         return conceptoRepository.save(c);
     }
 
+    // Elimina un concepto por ID
     @Transactional
     public void deleteConcepto(Long id) {
         Concepto c = conceptoRepository.findById(id)
@@ -44,11 +48,13 @@ public class ConceptoService {
         conceptoRepository.delete(c);
     }
 
+    // Encuentra concepto por ID
     public Concepto findById(Long id) {
         return conceptoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concepto no encontrado: " + id));
     }
 
+    // Lista todos los conceptos
     public List<Concepto> findAll() {
         return conceptoRepository.findAll();
     }

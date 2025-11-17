@@ -19,29 +19,34 @@ public class ConceptoController {
 
     @PostMapping
     public ResponseEntity<Concepto> create(@RequestBody Concepto concepto) {
+        // Crea un nuevo concepto
         Concepto created = conceptoService.createConcepto(concepto);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Concepto> update(@PathVariable Long id, @RequestBody Concepto cambios) {
+        // Actualiza un concepto existente
         Concepto updated = conceptoService.updateConcepto(id, cambios);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
+        // Elimina un concepto por ID
         conceptoService.deleteConcepto(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<List<Concepto>> listAll() {
+        // Lista todos los conceptos
         return ResponseEntity.ok(conceptoService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Concepto> getById(@PathVariable Long id) {
+        // Obtiene un concepto por ID
         Concepto c = conceptoService.findById(id);
         return ResponseEntity.ok(c);
     }

@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface ConceptoRepository extends JpaRepository<Concepto, Long> {
+    // Busca un concepto por nombre
     Optional<Concepto> findByNombre(String nombre);
 }

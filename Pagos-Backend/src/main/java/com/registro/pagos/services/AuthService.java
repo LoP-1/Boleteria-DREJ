@@ -20,26 +20,29 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
 
-    private AuthService authService;
-
+    // Almacén de tokens en memoria (en producción usar Redis o BD)
     private final Map<String, TokenInfo> tokenStore = new ConcurrentHashMap<>();
-    //duracion del token
+    // Duración del token en segundos (8 horas)
     private final long expirySeconds = Duration.ofHours(8).getSeconds();
 
     public AuthService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // Método de login que valida credenciales y genera token
     public LoginResponse login(LoginRequest req) {
+        // Valida entrada
         if (req == null || req.getDni() == null || req.getPassword() == null) {
             throw new InvalidOperationException("DNI y password son requeridos");
         }
+        // Busca usuario
         Optional<Usuario> uOpt = usuarioRepository.findByDni(req.getDni());
         if (uOpt.isEmpty()) {
             throw new ResourceNotFoundException("Usuario no encontrado para dni: " + req.getDni());
         }
         Usuario usuario = uOpt.get();
 
+        // Verifica contraseña
         String stored = usuario.getPasswordHash();
         if (stored == null) {
             throw new InvalidOperationException("El usuario no tiene password configurado");
@@ -49,12 +52,14 @@ public class AuthService {
             throw new InvalidOperationException("Credenciales inválidas");
         }
 
+        // Genera token
         String token = UUID.randomUUID().toString();
         Instant expiresAt = Instant.now().plusSeconds(expirySeconds);
         tokenStore.put(token, new TokenInfo(req.getDni(), expiresAt));
-        return new LoginResponse(token, req.getDni(), usuario.getRol(),expiresAt.getEpochSecond());
+        return new LoginResponse(token, req.getDni(), usuario.getRol(), expiresAt.getEpochSecond());
     }
 
+    // Valida token y retorna DNI si válido
     public Optional<String> validateToken(String token) {
         if (token == null) return Optional.empty();
         TokenInfo info = tokenStore.get(token);
@@ -66,10 +71,12 @@ public class AuthService {
         return Optional.of(info.dni);
     }
 
+    // Remueve token (logout)
     public void logout(String token) {
         if (token != null) tokenStore.remove(token);
     }
 
+    // Clase interna para almacenar info de token
     private static class TokenInfo {
         final String dni;
         final Instant expiresAt;

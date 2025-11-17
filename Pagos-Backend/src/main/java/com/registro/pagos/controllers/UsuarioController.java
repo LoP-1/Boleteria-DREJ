@@ -17,7 +17,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    // Registrar usuario
+    // Clase interna para request de registro
     public static class RegisterUsuarioRequest {
         public String dni;
         public String nombreCompleto;
@@ -27,9 +27,11 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<?> register(@RequestBody RegisterUsuarioRequest req) {
+        // Valida campos requeridos
         if (req == null || req.dni == null || req.dni.isBlank() || req.password == null) {
             throw new InvalidOperationException("DNI y password son requeridos");
         }
+        // Crea el usuario
         Usuario u = new Usuario();
         u.setDni(req.dni);
         u.setRol(req.rol);
@@ -38,7 +40,7 @@ public class UsuarioController {
         return ResponseEntity.status(201).body(created);
     }
 
-    // Editar usuario (por DNI path)
+    // Clase interna para request de edición
     public static class EditUsuarioRequest {
         public String nombreCompleto;
         public String password;
@@ -47,31 +49,34 @@ public class UsuarioController {
 
     @PutMapping("/{dni}")
     public ResponseEntity<?> edit(@PathVariable String dni, @RequestBody EditUsuarioRequest req) {
+        // Prepara cambios
         Usuario cambios = new Usuario();
         cambios.setNombreCompleto(req != null ? req.nombreCompleto : null);
         cambios.setRol(req != null ? req.rol : "USUARIO");
         String newPass = req != null ? req.password : null;
+        // Edita el usuario
         Usuario updated = usuarioService.editUsuario(dni, cambios, newPass);
         return ResponseEntity.ok(updated);
     }
 
-    // Eliminar usuario
+    // Elimina un usuario por DNI
     @DeleteMapping("/{dni}")
     public ResponseEntity<?> delete(@PathVariable String dni) {
         usuarioService.deleteUsuario(dni);
         return ResponseEntity.noContent().build();
     }
 
-    // Obtener usuario por dni
+    // Obtiene un usuario por DNI (sin password)
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         Usuario u = usuarioService.findByDni(dni);
-        u.setPasswordHash(null);
+        u.setPasswordHash(null); // No devolver password
         return ResponseEntity.ok(u);
     }
 
     @GetMapping()
     public ResponseEntity<?> getAllUsers(){
+        // Lista todos los usuarios
         return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
 

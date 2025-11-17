@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    // Busca un usuario por DNI
     Optional<Usuario> findByDni(String dni);
 }

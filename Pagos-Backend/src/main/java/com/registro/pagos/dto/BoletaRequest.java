@@ -9,7 +9,6 @@ public class BoletaRequest {
     private LocalDate fechaEmision;
     private String documentoIdentidad;
     private List<DetalleRequest> detalles;
-    // opcional: permitir enviar dniEncargado; si usas token/header puedes ignorar este campo
     private String dniEncargado;
 
     public BoletaRequest() {}

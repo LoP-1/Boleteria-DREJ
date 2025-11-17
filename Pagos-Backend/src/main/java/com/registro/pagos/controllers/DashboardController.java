@@ -33,7 +33,7 @@ public class DashboardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) String unidadCompetente) {
-
+        // Obtiene el resumen del dashboard con filtros opcionales
         DashboardSummaryDTO dto = dashboardService.getSummary(dateFrom, dateTo, unidadCompetente);
         return ResponseEntity.ok(dto);
     }
@@ -42,7 +42,7 @@ public class DashboardController {
     public ResponseEntity<List<TimeSeriesPointDTO>> getRevenue(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
-
+        // Obtiene la serie de ingresos por periodo
         List<TimeSeriesPointDTO> series = dashboardService.getRevenueTimeSeries(dateFrom, dateTo);
         return ResponseEntity.ok(series);
     }
@@ -53,7 +53,7 @@ public class DashboardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "amount") String sortBy) {
-
+        // Obtiene los top conceptos por monto
         List<TopConceptDTO> list = dashboardService.getTopConcepts(dateFrom, dateTo, limit, sortBy);
         return ResponseEntity.ok(list);
     }
@@ -64,7 +64,7 @@ public class DashboardController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "excel") String format,
             HttpServletResponse response) throws IOException {
-
+        // Exporta ventas por día en CSV o Excel
         String filename;
         if ("csv".equalsIgnoreCase(format)) {
             filename = String.format("ventas_por_dia_%s_%s.csv",
@@ -89,7 +89,7 @@ public class DashboardController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "excel") String format,
             HttpServletResponse response) throws IOException {
-
+        // Exporta boletas detalladas en CSV o Excel
         String filename;
         if ("csv".equalsIgnoreCase(format)) {
             filename = String.format("boletas_detalladas_%s_%s.csv",

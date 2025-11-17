@@ -24,23 +24,25 @@ public class DashboardService {
         this.em = em;
     }
 
+    // Define fecha desde por defecto (primer día del mes actual)
     private LocalDate defaultFrom(LocalDate from) {
         if (from != null) return from;
-        // por defecto primer día del mes actual
         return LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
     }
 
+    // Define fecha hasta por defecto (hoy)
     private LocalDate defaultTo(LocalDate to) {
         if (to != null) return to;
         return LocalDate.now();
     }
 
+    // Obtiene resumen del dashboard con filtros opcionales
     @Transactional(readOnly = true)
     public DashboardSummaryDTO getSummary(LocalDate dateFrom, LocalDate dateTo, String unidadCompetente) {
         LocalDate from = defaultFrom(dateFrom);
         LocalDate to = defaultTo(dateTo);
 
-        // total facturado (solo PAGADA) - usar parámetro para el enum
+        // Consulta JPQL para total facturado (solo boletas pagadas)
         StringBuilder totalFacturadoJpql = new StringBuilder();
         totalFacturadoJpql.append("SELECT COALESCE(SUM(d.precioUnitario * d.cantidad), 0) ")
                 .append("FROM DetalleBoleta d JOIN d.boleta b ")
@@ -56,7 +58,7 @@ public class DashboardService {
         if (unidadCompetente != null) q1.setParameter("unidad", unidadCompetente);
         BigDecimal totalFacturado = q1.getSingleResult();
 
-        // total boletas (count)
+        // Consulta para total de boletas
         StringBuilder totalBoletasJpql = new StringBuilder();
         totalBoletasJpql.append("SELECT COUNT(b) FROM Boleta b ")
                 .append("WHERE b.fechaEmision BETWEEN :from AND :to ");
@@ -70,7 +72,7 @@ public class DashboardService {
         if (unidadCompetente != null) q2.setParameter("unidad", unidadCompetente);
         Long totalBoletas = q2.getSingleResult();
 
-        // total pendientes (count) - usar parámetro para enum
+        // Consulta para total de pendientes
         String pendientesJpql =
                 "SELECT COUNT(b) FROM Boleta b WHERE b.fechaEmision BETWEEN :from AND :to AND b.estado = :estadoPendiente";
         TypedQuery<Long> q3 = em.createQuery(pendientesJpql, Long.class);
@@ -79,7 +81,7 @@ public class DashboardService {
         q3.setParameter("estadoPendiente", EstadoBoleta.PENDIENTE);
         Long totalPendientes = q3.getSingleResult();
 
-        // total items (sum cantidad)
+        // Consulta para total de items
         StringBuilder totalItemsJpql = new StringBuilder();
         totalItemsJpql.append("SELECT COALESCE(SUM(d.cantidad), 0) FROM DetalleBoleta d JOIN d.boleta b ")
                 .append("WHERE b.fechaEmision BETWEEN :from AND :to ");
@@ -96,6 +98,7 @@ public class DashboardService {
         return new DashboardSummaryDTO(totalBoletas, totalFacturado, totalPendientes, totalItems);
     }
 
+    // Obtiene serie de tiempo para ingresos
     @Transactional(readOnly = true)
     public List<TimeSeriesPointDTO> getRevenueTimeSeries(LocalDate dateFrom, LocalDate dateTo) {
         LocalDate from = defaultFrom(dateFrom);
@@ -122,6 +125,7 @@ public class DashboardService {
         return series;
     }
 
+    // Obtiene top conceptos por monto o cantidad
     @Transactional(readOnly = true)
     public List<TopConceptDTO> getTopConcepts(LocalDate dateFrom, LocalDate dateTo, int limit, String sortBy) {
         LocalDate from = defaultFrom(dateFrom);

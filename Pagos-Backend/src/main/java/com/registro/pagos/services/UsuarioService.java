@@ -22,6 +22,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // Registra un nuevo usuario
     @Transactional
     public Usuario registerUsuario(Usuario usuario, String plainPassword) {
         if (usuario == null || usuario.getDni() == null || usuario.getDni().isBlank()) {
@@ -35,18 +36,21 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    // Edita un usuario existente
     @Transactional
     public Usuario editUsuario(String dni, Usuario cambios, String newPlainPassword) {
         Usuario u = usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + dni));
         if (cambios.getNombreCompleto() != null)
-            u.setNombreCompleto(cambios.getNombreCompleto()); u.setRol(cambios.getRol()); ;
+            u.setNombreCompleto(cambios.getNombreCompleto());
+        u.setRol(cambios.getRol());
         if (newPlainPassword != null) {
             u.setPasswordHash(newPlainPassword);
         }
         return usuarioRepository.save(u);
     }
 
+    // Elimina un usuario por DNI
     @Transactional
     public void deleteUsuario(String dni) {
         Usuario u = usuarioRepository.findByDni(dni)
@@ -54,12 +58,13 @@ public class UsuarioService {
         usuarioRepository.delete(u);
     }
 
+    // Encuentra usuario por DNI
     public Usuario findByDni(String dni) {
         return usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + dni));
     }
 
-    //Obtener todos los usuarios
+    // Obtener todos los usuarios
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
     }

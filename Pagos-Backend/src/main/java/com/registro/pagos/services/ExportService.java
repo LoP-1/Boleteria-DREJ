@@ -22,12 +22,14 @@ import java.util.List;
 public class ExportService {
 
     private final EntityManager em;
+    // Formateador de fechas para exportaciones
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ExportService(EntityManager em) {
         this.em = em;
     }
 
+    // Exporta ventas por día a CSV
     @Transactional(readOnly = true)
     public void exportVentasPorDiaCSV(LocalDate dateFrom, LocalDate dateTo, OutputStream out) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
@@ -68,11 +70,13 @@ public class ExportService {
         writer.flush();
     }
 
+    // Exporta ventas por día a Excel
     @Transactional(readOnly = true)
     public void exportVentasPorDiaExcel(LocalDate dateFrom, LocalDate dateTo, OutputStream out) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Ventas por Dia");
 
+        // Estilos para header y celdas
         CellStyle headerStyle = workbook.createCellStyle();
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
@@ -80,13 +84,11 @@ public class ExportService {
         headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-        CellStyle dateStyle = workbook.createCellStyle();
-        CreationHelper createHelper = workbook.getCreationHelper();
-        dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-mm-dd"));
-
         CellStyle moneyStyle = workbook.createCellStyle();
+        CreationHelper createHelper = workbook.getCreationHelper();
         moneyStyle.setDataFormat(createHelper.createDataFormat().getFormat("S/. #,##0.00"));
 
+        // Header
         Row headerRow = sheet.createRow(0);
         String[] columns = {"Fecha", "Boletas Emitidas", "Boletas Pagadas", "Total Facturado", "Total Items"};
         for (int i = 0; i < columns.length; i++) {
@@ -95,6 +97,7 @@ public class ExportService {
             cell.setCellStyle(headerStyle);
         }
 
+        // Consulta JPQL
         String jpql = "SELECT b.fechaEmision, COUNT(b), " +
                 "SUM(CASE WHEN b.estado = :estadoPagada THEN 1 ELSE 0 END), " +
                 "COALESCE(SUM(CASE WHEN b.estado = :estadoPagada THEN " +
@@ -117,9 +120,7 @@ public class ExportService {
             Row row = sheet.createRow(rowNum++);
 
             LocalDate fecha = (LocalDate) rowData[0];
-            Cell cell0 = row.createCell(0);
-            cell0.setCellValue(fecha.toString());
-
+            row.createCell(0).setCellValue(fecha.toString());
             row.createCell(1).setCellValue(((Number) rowData[1]).longValue());
             row.createCell(2).setCellValue(((Number) rowData[2]).longValue());
 
@@ -130,6 +131,7 @@ public class ExportService {
             row.createCell(4).setCellValue(((Number) rowData[4]).longValue());
         }
 
+        // Ajustar ancho de columnas
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -138,6 +140,7 @@ public class ExportService {
         workbook.close();
     }
 
+    // Exporta boletas detalladas a CSV
     @Transactional(readOnly = true)
     public void exportBoletasDetalladasCSV(LocalDate dateFrom, LocalDate dateTo, OutputStream out) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
@@ -181,11 +184,13 @@ public class ExportService {
         writer.flush();
     }
 
+    // Exporta boletas detalladas a Excel
     @Transactional(readOnly = true)
     public void exportBoletasDetalladasExcel(LocalDate dateFrom, LocalDate dateTo, OutputStream out) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Boletas Detalladas");
 
+        // Estilos
         CellStyle headerStyle = workbook.createCellStyle();
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
@@ -197,6 +202,7 @@ public class ExportService {
         CreationHelper createHelper = workbook.getCreationHelper();
         moneyStyle.setDataFormat(createHelper.createDataFormat().getFormat("S/. #,##0.00"));
 
+        // Header
         Row headerRow = sheet.createRow(0);
         String[] columns = {"Fecha", "Boleta ID", "Nombre", "DNI", "Estado", "Concepto", "Cantidad", "Precio Unit", "Subtotal"};
         for (int i = 0; i < columns.length; i++) {
@@ -205,6 +211,7 @@ public class ExportService {
             cell.setCellStyle(headerStyle);
         }
 
+        // Consulta
         String jpql = "SELECT b.fechaEmision, b.id, b.nombre, b.documentoIdentidad, b.estado, " +
                 "d.concepto.nombre, d.cantidad, d.precioUnitario, (d.cantidad * d.precioUnitario) " +
                 "FROM DetalleBoleta d JOIN d.boleta b " +
@@ -238,6 +245,7 @@ public class ExportService {
             cell8.setCellStyle(moneyStyle);
         }
 
+        // Ajustar columnas
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -246,6 +254,7 @@ public class ExportService {
         workbook.close();
     }
 
+    // Escapa valores para CSV
     private String escapeCsv(String s) {
         if (s == null) return "";
         if (s.contains(",") || s.contains("\"") || s.contains("\n")) {
