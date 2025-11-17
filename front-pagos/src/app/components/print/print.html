@@ -1,7 +1,9 @@
+<!-- Indicador de carga mientras se obtiene la boleta -->
 <div *ngIf="loading" class="flex items-center justify-center min-h-screen">
   <p class="text-lg text-gray-600">Cargando boleta...</p>
 </div>
 
+<!-- Mensaje de error si ocurre un problema al cargar -->
 <div *ngIf="error" class="flex items-center justify-center min-h-screen">
   <div class="text-center">
     <p class="text-lg text-red-600 mb-4">{{ error }}</p>
@@ -13,8 +15,9 @@
   </div>
 </div>
 
+<!-- Contenido principal cuando la boleta está cargada -->
 <div *ngIf="boleta && !loading">
-  <!-- Botones de accion -->
+  <!-- Barra de acciones fija en la parte superior (no se imprime) -->
   <div class="no-print sticky top-0 z-50 bg-white border-b border-gray-300 shadow-sm mb-4 p-4">
     <div class="max-w-4xl mx-auto flex justify-end gap-3">
       <button
@@ -30,9 +33,9 @@
     </div>
   </div>
 
-  <!-- Contenido de la boleta -->
+  <!-- Contenido del recibo de ingreso -->
   <div class="max-w-4xl mx-auto p-8 bg-white">
-    <!-- Header con logo y datos del documento -->
+    <!-- Encabezado con logo y datos del documento -->
     <div class="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-800">
       <!-- Logo y datos de la empresa -->
       <div class="flex items-start gap-4">
@@ -46,7 +49,7 @@
         </div>
       </div>
       
-      <!-- RUC y numero de documento -->
+      <!-- RUC y número de documento -->
       <div class="text-right">
         <p class="text-sm font-bold text-blue-700">R.U.C. 20188468706</p>
         <h1 class="text-base font-bold text-gray-800 mt-1">RECIBO DE INGRESO</h1>
@@ -54,12 +57,12 @@
       </div>
     </div>
     
-    <!-- Direccion centrada -->
+    <!-- Dirección centrada -->
     <div class="text-center text-sm py-3 border-b border-gray-400 mb-5">
       Jr. Julio C. Tello 776 - El Tambo - Huancayo
     </div>
     
-    <!-- Informacion del cliente -->
+    <!-- Información del cliente -->
     <div class="space-y-2 mb-6">
       <div class="flex items-center gap-2">
         <span class="text-sm font-semibold text-blue-700 w-28">Señor (es):</span>
@@ -79,7 +82,7 @@
       </div>
     </div>
     
-    <!-- Tabla de items -->
+    <!-- Tabla de ítems detallados -->
     <div class="border-0.5 border-gray-800 mb-4">
       <table class="w-full">
         <thead class="bg-gray-100">
@@ -91,12 +94,14 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Fila por cada detalle -->
           <tr *ngFor="let detalle of boleta.detalles" class="hover:bg-gray-50">
             <td class="border border-gray-800 px-3 py-2 text-center text-sm">{{ detalle.cantidad }}</td>
             <td class="border border-gray-800 px-3 py-2 text-sm">{{ getConceptoNombre(detalle) }}</td>
             <td class="border border-gray-800 px-3 py-2 text-right text-sm">{{ getPrecioUnitario(detalle) | number:'1.2-2' }}</td>
             <td class="border border-gray-800 px-3 py-2 text-right text-sm font-semibold">{{ getSubtotal(detalle) | number:'1.2-2' }}</td>
           </tr>
+          <!-- Fila cuando no hay detalles -->
           <tr *ngIf="!boleta.detalles || boleta.detalles.length === 0">
             <td colspan="4" class="border border-gray-800 px-3 py-8 text-center text-sm text-gray-500">
               Sin detalles
@@ -106,7 +111,7 @@
       </table>
     </div>
     
-    <!-- Total -->
+    <!-- Sección del total -->
     <div class="flex justify-end mb-4">
       <div class="border-1 border-gray-800 px-6 py-3 min-w-[200px]">
         <p class="text-sm font-bold text-right text-gray-700">TOTAL</p>
@@ -114,12 +119,12 @@
       </div>
     </div>
     
-    <!-- Son -->
+    <!-- Campo para "Son" -->
     <div class="text-xs bg-gray-50 border border-gray-300 px-3 py-2 mb-6">
       Son: ____________________________________________________________
     </div>
     
-    <!-- Footer -->
+    <!-- Pie de página -->
     <div class="text-center pt-6 border-t border-dashed border-gray-400">
       <p class="text-sm text-gray-600">Gracias por su preferencia</p>
       <p class="text-xs text-gray-500 mt-2">Impreso el: {{ fechaImpresion | date:'dd/MM/yyyy HH:mm' }}</p>

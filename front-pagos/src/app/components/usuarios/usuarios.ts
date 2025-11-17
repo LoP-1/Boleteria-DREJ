@@ -1,9 +1,11 @@
+// Importaciones necesarias para el componente
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditUsuarioRequest, RegisterUsuarioRequest, Usuario } from '../../models/Usuario';
 import { UsuarioService } from '../../services/usuario';
 
+// Decorador del componente, define selector, si es standalone, imports y template
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -11,22 +13,28 @@ import { UsuarioService } from '../../services/usuario';
   templateUrl: './usuarios.html'
 })
 export class Usuarios implements OnInit {
+  // Modelos para formularios
   registerModel: RegisterUsuarioRequest = { dni: '', nombreCompleto: '', password: '', rol: '' };
   searchDni = '';
   currentUser: Usuario | null = null;
   editModel: EditUsuarioRequest = { nombreCompleto: '', password: '', rol: '' };
+  // Estados para mensajes
   message = '';
   error = '';
   
+  // Lista de usuarios y estado de carga
   usuarios: Usuario[] = [];
   loadingList = false;
 
+  // Constructor inyecta el servicio de usuarios
   constructor(private usuarioService: UsuarioService) {}
 
+  // Método de inicialización: carga la lista de usuarios
   ngOnInit(): void {
     this.loadUsuarios();
   }
 
+  // Carga todos los usuarios
   loadUsuarios(): void {
     this.loadingList = true;
     this.usuarioService.getAll().subscribe({
@@ -41,17 +49,20 @@ export class Usuarios implements OnInit {
     });
   }
 
+  // Selecciona un usuario de la lista y lo busca
   selectUsuario(usuario: Usuario): void {
     this.searchDni = usuario.dni;
     this.find();
   }
 
+  // Registra un nuevo usuario
   register(): void {
     this.message = '';
     this.error = '';
     this.usuarioService.register(this.registerModel).subscribe({
       next: () => {
         this.message = 'Usuario registrado correctamente';
+        // Resetea el formulario
         this.registerModel = { dni: '', nombreCompleto: '', password: '', rol: '' };
         this.loadUsuarios();
       },
@@ -62,6 +73,7 @@ export class Usuarios implements OnInit {
     });
   }
 
+  // Busca un usuario por DNI
   find(): void {
     this.error = '';
     this.message = '';
@@ -72,6 +84,7 @@ export class Usuarios implements OnInit {
     this.usuarioService.getByDni(this.searchDni).subscribe({
       next: (u) => {
         this.currentUser = u;
+        // Carga datos en el modelo de edición
         this.editModel = {
           nombreCompleto: u.nombreCompleto,
           password: '',
@@ -86,9 +99,11 @@ export class Usuarios implements OnInit {
     });
   }
 
+  // Guarda los cambios en la edición
   saveEdit(): void {
     if (!this.currentUser) return;
     
+    // Construye el payload solo con campos modificados
     const payload: any = {};
     
     if (this.editModel.nombreCompleto && this.editModel.nombreCompleto.trim() !== '') {
@@ -111,9 +126,9 @@ export class Usuarios implements OnInit {
     this.usuarioService.edit(this.currentUser.dni, payload).subscribe({
       next: () => {
         this.message = 'Usuario actualizado correctamente';
-        this.editModel.password = '';
+        this.editModel.password = ''; // Resetea la contraseña
         this.loadUsuarios();
-        this.find();
+        this.find(); // Recarga el usuario actual
       },
       error: (err) => {
         console.error(err);
@@ -122,6 +137,7 @@ export class Usuarios implements OnInit {
     });
   }
 
+  // Elimina el usuario actual
   delete(): void {
     if (!this.currentUser) return;
     

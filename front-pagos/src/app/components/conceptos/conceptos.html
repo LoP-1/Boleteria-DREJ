@@ -1,20 +1,23 @@
+<!-- Contenedor principal de la página con fondo gris claro -->
 <div class="min-h-screen bg-gray-50 p-6">
   <div class="max-w-7xl mx-auto">
-    <!-- Header -->
+    <!-- Encabezado de la página -->
     <div class="mb-8">
       <h2 class="text-3xl font-bold text-gray-800 border-b-4 border-blue-500 pb-3 inline-block">
         Conceptos
       </h2>
     </div>
 
-    <!-- Formulario -->
+    <!-- Formulario para crear o editar conceptos -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
       <h3 class="text-xl font-semibold text-gray-700 mb-4">
         {{ editingId ? 'Editar Concepto' : 'Nuevo Concepto' }}
       </h3>
 
+      <!-- Formulario principal para guardar conceptos -->
       <form (ngSubmit)="save()" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Campo para denominación (requerido) -->
           <div>
             <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">
               Denominacion <span class="text-red-500">*</span>
@@ -28,6 +31,7 @@
               placeholder="Ingrese la denominacion" />
           </div>
 
+          <!-- Campo para unidad competente (requerido) -->
           <div>
             <label for="unidadCompetente" class="block text-sm font-medium text-gray-700 mb-1">
               Unidad Competente para Resolver <span class="text-red-500">*</span>
@@ -41,6 +45,7 @@
               placeholder="Unidad competente" />
           </div>
 
+          <!-- Campo para página (requerido) -->
           <div>
             <label for="pagina" class="block text-sm font-medium text-gray-700 mb-1">
               Pagina <span class="text-red-500">*</span>
@@ -54,6 +59,7 @@
               placeholder="Numero de pagina" />
           </div>
 
+          <!-- Campo para monto (requerido, tipo número) -->
           <div>
             <label for="precio" class="block text-sm font-medium text-gray-700 mb-1">
               Monto (S/.) <span class="text-red-500">*</span>
@@ -70,6 +76,7 @@
           </div>
         </div>
 
+        <!-- Botones para guardar y limpiar formulario -->
         <div class="flex gap-3 pt-2">
           <button
             type="submit"
@@ -85,12 +92,13 @@
         </div>
       </form>
 
+      <!-- Mensaje de error si ocurre -->
       <div *ngIf="error" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700">
         {{ error }}
       </div>
     </div>
 
-    <!-- Tabla -->
+    <!-- Tabla para listar conceptos existentes -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
         <h3 class="text-lg font-semibold text-gray-700">
@@ -98,6 +106,7 @@
         </h3>
       </div>
 
+      <!-- Tabla con scroll horizontal si es necesario -->
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -123,6 +132,7 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Bucle para cada concepto -->
             <tr *ngFor="let c of conceptos" class="hover:bg-gray-50 transition-colors">
               <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ c.id }}</td>
               <td class="px-4 py-3 text-sm text-gray-700">{{ c.nombre }}</td>
@@ -133,6 +143,7 @@
               </td>
               <td class="px-4 py-3 text-center">
                 <div class="flex justify-center gap-2">
+                  <!-- Botones para editar y eliminar -->
                   <button
                     (click)="edit(c)"
                     class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1">
@@ -146,6 +157,7 @@
                 </div>
               </td>
             </tr>
+            <!-- Fila cuando no hay conceptos -->
             <tr *ngIf="conceptos.length === 0">
               <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                 No hay conceptos registrados

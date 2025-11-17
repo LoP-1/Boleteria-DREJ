@@ -1,8 +1,10 @@
+<!-- Contenedor principal del historial de boletas del usuario -->
 <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
   <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-3">
     Historial de boletas (pagadas) del encargado
   </h2>
 
+  <!-- Información del encargado si está disponible -->
   <div
     *ngIf="nombreEncargado"
     class="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
@@ -12,14 +14,17 @@
     </span>
   </div>
 
+  <!-- Indicador de carga -->
   <div *ngIf="loading" class="text-center py-8 text-gray-600">
     Cargando historial...
   </div>
 
+  <!-- Mensaje de error -->
   <div *ngIf="error" class="p-3 bg-red-50 border border-red-200 rounded-md text-danger">
     {{ error }}
   </div>
 
+  <!-- Tabla de boletas si hay datos -->
   <div *ngIf="!loading && boletas.length > 0" class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-4">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
@@ -51,6 +56,7 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Fila por cada boleta -->
         <tr *ngFor="let b of boletas" class="hover:bg-gray-50 transition-colors">
           <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ b.id }}</td>
           <td class="px-4 py-3 text-sm text-gray-700">{{ b.nombre }}</td>
@@ -63,6 +69,7 @@
             S/. {{ totalBoleta(b) | number:'1.2-2' }}
           </td>
           <td class="px-4 py-3 text-center">
+            <!-- Detalle expandible con tabla interna -->
             <details class="cursor-pointer">
               <summary class="text-blue-600 hover:text-blue-800 font-medium text-sm list-none">
                 Ver ítems ({{ b.detalles.length || 0 }})
@@ -79,6 +86,7 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <!-- Fila por cada detalle -->
                     <tr *ngFor="let d of b.detalles" class="border-b border-gray-100">
                       <td class="py-2 px-2 text-gray-700">{{ conceptoNombre(d) }}</td>
                       <td class="py-2 px-2 text-center text-gray-700">{{ d.cantidad }}</td>
@@ -95,6 +103,7 @@
             </details>
           </td>
           <td class="px-4 py-3 text-center">
+            <!-- Botón para imprimir boleta -->
             <button
               type="button"
               (click)="imprimirBoleta(b)"
@@ -107,6 +116,7 @@
     </table>
   </div>
 
+  <!-- Mensaje cuando no hay boletas -->
   <div *ngIf="!loading && boletas.length === 0 && !error" class="text-center py-8 text-gray-500">
     No se encontraron boletas pagadas por este encargado.
   </div>
