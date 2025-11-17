@@ -53,7 +53,7 @@
       <div class="text-right">
         <p class="text-sm font-bold text-blue-700">R.U.C. 20188468706</p>
         <h1 class="text-base font-bold text-gray-800 mt-1">RECIBO DE INGRESO</h1>
-        <p class="text-xl font-bold text-red-600 mt-1">{{boleta.id}} - N° 114177</p>
+        <p class="text-xl font-bold text-red-600 mt-1">N°{{formatearId(boleta.id ?? 0)}}</p>
       </div>
     </div>
     
@@ -121,7 +121,7 @@
     
     <!-- Campo para "Son" -->
     <div class="text-xs bg-gray-50 border border-gray-300 px-3 py-2 mb-6">
-      Son: ____________________________________________________________
+  <strong>Son:</strong> {{ numeroATexto(getTotal()) }} SOLES
     </div>
     
     <!-- Pie de página -->

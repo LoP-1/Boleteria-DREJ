@@ -96,4 +96,74 @@ export class Print implements OnInit {
     const date = new Date(fecha);
     return date.toLocaleDateString('es-PE');
   }
+  formatearId(id: number): string {
+  return id.toString().padStart(6, '0');
+}
+
+numeroATexto(numero: number): string {
+  const unidades = ['', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+  const decenas = ['', '', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+  const especiales = ['DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISEIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE'];
+  const centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+  if (numero === 0) return 'CERO';
+
+  // Separar parte entera y decimales
+  const parteEntera = Math.floor(numero);
+  const decimales = Math.round((numero - parteEntera) * 100);
+
+  let resultado = '';
+
+  // Convertir parte entera
+  if (parteEntera === 0) {
+    resultado = 'CERO';
+  } else {
+    resultado = this.convertirEntero(parteEntera, unidades, decenas, especiales, centenas);
+  }
+
+  // Agregar decimales si existen
+  if (decimales > 0) {
+    resultado += ` CON ${decimales.toString().padStart(2, '0')}/100`;
+  } else {
+    resultado += ' CON 00/100';
+  }
+
+  return resultado;
+}
+
+// Función auxiliar para convertir la parte entera
+private convertirEntero(num: number, unidades: string[], decenas: string[], especiales: string[], centenas: string[]): string {
+  if (num === 0) return '';
+  if (num === 100) return 'CIEN';
+  if (num < 10) return unidades[num];
+  if (num >= 10 && num < 20) return especiales[num - 10];
+  if (num >= 20 && num < 100) {
+    const dec = Math.floor(num / 10);
+    const uni = num % 10;
+    if (uni === 0) return decenas[dec];
+    return decenas[dec] + ' Y ' + unidades[uni];
+  }
+  if (num >= 100 && num < 1000) {
+    const cen = Math.floor(num / 100);
+    const resto = num % 100;
+    if (resto === 0) return num === 100 ? 'CIEN' : centenas[cen];
+    return centenas[cen] + ' ' + this.convertirEntero(resto, unidades, decenas, especiales, centenas);
+  }
+  if (num >= 1000 && num < 1000000) {
+    const miles = Math.floor(num / 1000);
+    const resto = num % 1000;
+    let textoMiles = miles === 1 ? 'MIL' : this.convertirEntero(miles, unidades, decenas, especiales, centenas) + ' MIL';
+    if (resto === 0) return textoMiles;
+    return textoMiles + ' ' + this.convertirEntero(resto, unidades, decenas, especiales, centenas);
+  }
+  if (num >= 1000000) {
+    const millones = Math.floor(num / 1000000);
+    const resto = num % 1000000;
+    let textoMillones = millones === 1 ? 'UN MILLON' : this.convertirEntero(millones, unidades, decenas, especiales, centenas) + ' MILLONES';
+    if (resto === 0) return textoMillones;
+    return textoMillones + ' ' + this.convertirEntero(resto, unidades, decenas, especiales, centenas);
+  }
+  return '';
+}
+
 }
